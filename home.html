@@ -1,0 +1,181 @@
+import { useState } from 'react';
+
+export default function Calculator() {
+  const [display, setDisplay] = useState('0');
+  const [prevValue, setPrevValue] = useState(null);
+  const [operation, setOperation] = useState(null);
+  const [newNumber, setNewNumber] = useState(true);
+
+  const handleNumber = (num) => {
+    if (newNumber) {
+      setDisplay(String(num));
+      setNewNumber(false);
+    } else {
+      setDisplay(display === '0' ? String(num) : display + num);
+    }
+  };
+
+  const handleDecimal = () => {
+    if (newNumber) {
+      setDisplay('0.');
+      setNewNumber(false);
+    } else if (!display.includes('.')) {
+      setDisplay(display + '.');
+    }
+  };
+
+  const handleOperation = (op) => {
+    const currentValue = parseFloat(display);
+    
+    if (prevValue === null) {
+      setPrevValue(currentValue);
+    } else if (operation) {
+      const result = calculate(prevValue, currentValue, operation);
+      setDisplay(String(result));
+      setPrevValue(result);
+    }
+    
+    setOperation(op);
+    setNewNumber(true);
+  };
+
+  const calculate = (a, b, op) => {
+    switch (op) {
+      case '+': return a + b;
+      case '-': return a - b;
+      case '×': return a * b;
+      case '÷': return a / b;
+      default: return b;
+    }
+  };
+
+  const handleEquals = () => {
+    if (operation && prevValue !== null) {
+      const currentValue = parseFloat(display);
+      const result = calculate(prevValue, currentValue, operation);
+      setDisplay(String(result));
+      setPrevValue(null);
+      setOperation(null);
+      setNewNumber(true);
+    }
+  };
+
+  const handleClear = () => {
+    setDisplay('0');
+    setPrevValue(null);
+    setOperation(null);
+    setNewNumber(true);
+  };
+
+  const handleBackspace = () => {
+    if (display.length > 1) {
+      setDisplay(display.slice(0, -1));
+    } else {
+      setDisplay('0');
+      setNewNumber(true);
+    }
+  };
+
+  return (
+    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-900 to-gray-800">
+      <div className="bg-gray-800 rounded-2xl shadow-2xl p-6 w-80">
+        <div className="bg-gray-900 rounded-lg p-4 mb-4">
+          <div className="text-gray-500 text-sm text-right mb-1">
+            {prevValue !== null && operation && `${prevValue} ${operation}`}
+          </div>
+          <div className="text-white text-4xl text-right font-light break-all">
+            {display}
+          </div>
+        </div>
+        
+        <div className="grid grid-cols-4 gap-3">
+          <button
+            onClick={handleClear}
+            className="col-span-2 bg-red-600 hover:bg-red-700 text-white font-semibold py-4 rounded-lg transition-colors"
+          >
+            C
+          </button>
+          <button
+            onClick={handleBackspace}
+            className="bg-gray-600 hover:bg-gray-700 text-white font-semibold py-4 rounded-lg transition-colors"
+          >
+            ⌫
+          </button>
+          <button
+            onClick={() => handleOperation('÷')}
+            className="bg-orange-600 hover:bg-orange-700 text-white font-semibold py-4 rounded-lg transition-colors"
+          >
+            ÷
+          </button>
+
+          {[7, 8, 9].map(num => (
+            <button
+              key={num}
+              onClick={() => handleNumber(num)}
+              className="bg-gray-700 hover:bg-gray-600 text-white font-semibold py-4 rounded-lg transition-colors"
+            >
+              {num}
+            </button>
+          ))}
+          <button
+            onClick={() => handleOperation('×')}
+            className="bg-orange-600 hover:bg-orange-700 text-white font-semibold py-4 rounded-lg transition-colors"
+          >
+            ×
+          </button>
+
+          {[4, 5, 6].map(num => (
+            <button
+              key={num}
+              onClick={() => handleNumber(num)}
+              className="bg-gray-700 hover:bg-gray-600 text-white font-semibold py-4 rounded-lg transition-colors"
+            >
+              {num}
+            </button>
+          ))}
+          <button
+            onClick={() => handleOperation('-')}
+            className="bg-orange-600 hover:bg-orange-700 text-white font-semibold py-4 rounded-lg transition-colors"
+          >
+            -
+          </button>
+
+          {[1, 2, 3].map(num => (
+            <button
+              key={num}
+              onClick={() => handleNumber(num)}
+              className="bg-gray-700 hover:bg-gray-600 text-white font-semibold py-4 rounded-lg transition-colors"
+            >
+              {num}
+            </button>
+          ))}
+          <button
+            onClick={() => handleOperation('+')}
+            className="bg-orange-600 hover:bg-orange-700 text-white font-semibold py-4 rounded-lg transition-colors"
+          >
+            +
+          </button>
+
+          <button
+            onClick={() => handleNumber(0)}
+            className="col-span-2 bg-gray-700 hover:bg-gray-600 text-white font-semibold py-4 rounded-lg transition-colors"
+          >
+            0
+          </button>
+          <button
+            onClick={handleDecimal}
+            className="bg-gray-700 hover:bg-gray-600 text-white font-semibold py-4 rounded-lg transition-colors"
+          >
+            .
+          </button>
+          <button
+            onClick={handleEquals}
+            className="bg-green-600 hover:bg-green-700 text-white font-semibold py-4 rounded-lg transition-colors"
+          >
+            =
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
